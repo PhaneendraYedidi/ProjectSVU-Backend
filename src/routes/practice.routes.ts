@@ -2,13 +2,14 @@ import express, { Request, Response } from "express";
 import Question from "../models/Question";
 import PracticeAttempt from "../models/PracticeAttempt";
 import User from "../models/User";
+import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = express.Router();
 
 /**
  * GET /api/practice/questions
  */
-router.get("/questions", async (req: Request, res: Response) => {
+router.get("/questions", authMiddleware, async (req: Request, res: Response) => {
   const { mode, topic, year } = req.query;
 
   const filter: any = { isActive: true };
@@ -27,7 +28,7 @@ router.get("/questions", async (req: Request, res: Response) => {
 /**
  * POST /api/practice/submit
  */
-router.post("/submit", async (req: Request, res: Response) => {
+router.post("/submit", authMiddleware, async (req: Request, res: Response) => {
   const {
     userId,
     questionId,
@@ -66,7 +67,7 @@ router.post("/submit", async (req: Request, res: Response) => {
 /**
  * POST /api/practice/bookmark
  */
-router.post("/bookmark", async (req: Request, res: Response) => {
+router.post("/bookmark", authMiddleware, async (req: Request, res: Response) => {
   const { userId, questionId } = req.body;
 
   await User.findByIdAndUpdate(userId, {
