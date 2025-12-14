@@ -209,4 +209,42 @@ router.post("/answer", async (req, res) => {
   });
 });
 
+router.get("/session/:sessionId/stats", async (req, res) => {
+  const { sessionId } = req.params;
+
+  const session = await PracticeSession.findOne({ sessionId });
+
+  if (!session) {
+    return res.status(404).json({ message: "Session not found" });
+  }
+
+  const attempts = await PracticeAttempt.find({ sessionId });
+
+  const attempted = attempts.length;
+  const correct = attempts.filter(a => a.isCorrect).length;
+  const wrong = attempted - correct;
+
+  const totalTime = attempts.reduce(
+    (sum, a) => sum + (a.timeTaken || 0),
+    0
+  );
+
+  res.json({
+    sessionId,
+    totalQuestions: session.questionsServed.length,
+    attempted,
+    correct,
+    wrong,
+    accuracy:
+      attempted > 0
+        ? Number(((correct / attempted) * 100).toFixed(2))
+        : 0,
+    totalTime,
+    avgTime:
+      attempted > 0
+        ? Math.round(totalTime / attempted)
+        : 0
+  });
+});
+
 export default router;
