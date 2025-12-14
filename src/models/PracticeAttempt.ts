@@ -1,7 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IPracticeAttempt extends Document {
-  userId: mongoose.Types.ObjectId;
+  userId?: mongoose.Types.ObjectId;
+  sessionId?: string;
   questionId: mongoose.Types.ObjectId;
   selectedOption: string;
   isCorrect: boolean;
@@ -13,8 +14,9 @@ export interface IPracticeAttempt extends Document {
 
 const PracticeAttemptSchema = new Schema<IPracticeAttempt>(
   {
-    userId: Schema.Types.ObjectId,
-    questionId: Schema.Types.ObjectId,
+    userId: { type: Schema.Types.ObjectId, required: false },
+    sessionId: { type: String, required: false },
+    questionId: { type: Schema.Types.ObjectId, required: true },
     selectedOption: String,
     isCorrect: Boolean,
     timeTaken: Number,
