@@ -6,27 +6,40 @@ export interface IOption {
 }
 
 export interface IQuestion extends Document {
-  subject: string;
-  topic: string;
-  year: number;
-  questionText: string;
+  question: string;
   options: IOption[];
-  correctOption: string;
+  correctAnswer: string;
+  subject: string;
+  tags: string[];
   explanation: string;
   difficulty: string;
+  type: string;
+  source: string;
+  year: number;
   isActive: boolean;
 }
 
 const QuestionSchema = new Schema<IQuestion>(
   {
+    question: { type: String, required: true },
+
+    options: [
+      {
+        key: String,
+        text: String
+      }
+    ],
+
+    correctAnswer: { type: String, required: true },
+
     subject: String,
-    topic: String,
-    year: Number,
-    questionText: String,
-    options: [{ key: String, text: String }],
-    correctOption: String,
+    tags: [String],
     explanation: String,
     difficulty: String,
+    type: String,
+    source: String,
+    year: Number,
+
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }

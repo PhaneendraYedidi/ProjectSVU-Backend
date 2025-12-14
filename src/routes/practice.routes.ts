@@ -44,7 +44,7 @@ router.post("/submit", authMiddleware, async (req: Request, res: Response) => {
     return res.status(404).json({ message: "Question not found" });
   }
 
-  const isCorrect = question.correctOption === selectedOption;
+  const isCorrect = question.correctAnswer === selectedOption;
 
   await PracticeAttempt.create({
     userId,
@@ -59,7 +59,7 @@ router.post("/submit", authMiddleware, async (req: Request, res: Response) => {
 
   res.json({
     isCorrect,
-    correctOption: question.correctOption,
+    correctOption: question.correctAnswer,
     explanation: question.explanation
   });
 });
