@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import Question from "../models/Question";
 import PracticeAttempt from "../models/PracticeAttempt";
 import User from "../models/User";
-import { authMiddleware } from "../middleware/auth.middleware";
+import auth from "../middleware/auth.middleware";
 import crypto from "crypto";
 import PracticeSession from "../models/PracticeSession";
 
@@ -11,7 +11,7 @@ const router = express.Router();
 /**
  * GET /api/practice/questions
  */
-router.get("/questions", authMiddleware, async (req: Request, res: Response) => {
+router.get("/questions", auth, async (req: Request, res: Response) => {
   const { mode, topic, year } = req.query;
 
   const filter: any = { isActive: true };
@@ -30,7 +30,7 @@ router.get("/questions", authMiddleware, async (req: Request, res: Response) => 
 /**
  * POST /api/practice/submit
  */
-router.post("/submit", authMiddleware, async (req: Request, res: Response) => {
+router.post("/submit", auth, async (req: Request, res: Response) => {
   const {
     userId,
     questionId,
@@ -69,7 +69,7 @@ router.post("/submit", authMiddleware, async (req: Request, res: Response) => {
 /**
  * POST /api/practice/bookmark
  */
-router.post("/bookmark", authMiddleware, async (req: Request, res: Response) => {
+router.post("/bookmark", auth, async (req: Request, res: Response) => {
   const { userId, questionId } = req.body;
 
   await User.findByIdAndUpdate(userId, {

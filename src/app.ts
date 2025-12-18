@@ -7,6 +7,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import adminAuthRoutes from "./routes/admin.auth.routes";
 import adminUploadRoutes from "./routes/admin.upload.routes";
+import bookmarkRoutes from "./routes/bookmark.routes";
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ app.use("/api/admin", adminRoutes);
 // app.use("/admin", express.static(path.join(__dirname, "views")));
 app.use("/admin", adminAuthRoutes);
 app.use("/admin", adminUploadRoutes);
+app.use("/api/bookmarks",bookmarkRoutes)
 
 app.get("/", (_req, res) => {
   res.send("ProjectSVU Backend Running 🚀");

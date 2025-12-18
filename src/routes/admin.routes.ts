@@ -1,6 +1,6 @@
 import express, { Response } from "express";
 import { upload } from "../middleware/upload.middleware";
-import { authMiddleware, AuthRequest } from "../middleware/auth.middleware";
+import auth, { AuthRequest } from "../middleware/auth.middleware";
 import { parseExcelBuffer } from "../utils/excelParser";
 import Question from "../models/Question";
 import User from "../models/User";
@@ -9,11 +9,11 @@ const router = express.Router();
 
 router.post(
   "/upload-questions",
-  authMiddleware,
+  auth,
   upload.single("file"),
   async (req: AuthRequest, res: Response) => {
     try {
-      const user = await User.findById(req.userId);
+      const user = await User.findById(req.user!.id);
       if (!user || user.subscription !== "admin") {
         return res.status(403).json({ message: "Admin only" });
       }
