@@ -80,29 +80,68 @@ router.post("/bookmark", auth, async (req: Request, res: Response) => {
 });
 
 /* START SESSION */
-router.post("/start", async (req: Request, res: Response) => {
-  const userId = req.body.userId || null;
+router.post("/start", async (req, res) => {
+  const includeQuestions = req.query.includeQuestions === "true";
 
-  let questionLimit = 5;
+  const {
+    userId,
+    mode,
+    topics,
+    year,
+  } = req.body;
+  let limit = 5; // default free limit
 
   if (userId) {
     const user = await User.findById(userId);
     if (user && user.subscription !== "free") {
-      questionLimit = 1000000; // unlimited
+      limit = 1000000; // unlimited
     }
   }
 
-  const session = await PracticeSession.create({
+  const sessionId = crypto.randomUUID();
+
+  const filter = buildQuestionFilter(mode, topics, year);
+
+  let questions: any[] = [];
+
+  if (includeQuestions) {
+    questions = await Question.aggregate([
+      { $match: filter },
+      { $sample: { size: limit } }
+    ]);
+  }
+
+  await PracticeSession.create({
     userId,
-    sessionId: crypto.randomUUID(),
-    questionLimit
+    sessionId,
+    questionLimit: limit,
+    questionsServed: questions.map(q => q._id),
+    isActive: true
   });
 
   res.json({
-    sessionId: session.sessionId,
-    remaining: questionLimit
+    sessionId,
+    ...(includeQuestions && { questions })
   });
 });
+
+function buildQuestionFilter(
+  mode: string,
+  topics?: string[],
+  year?: number
+) {
+  const filter: any = {};
+
+  if (mode === "TOPIC" && topics?.length) {
+    filter.tags = { $in: topics };
+  }
+
+  if (mode === "YEAR" && year) {
+    filter.year = year;
+  }
+
+  return filter;
+}
 
 /* GET NEXT QUESTION */
 router.get("/question", async (req: Request, res: Response) => {
@@ -244,6 +283,16 @@ router.get("/session/:sessionId/stats", async (req, res) => {
       attempted > 0
         ? Math.round(totalTime / attempted)
         : 0
+  });
+});
+
+router.get("/filters", async (_, res) => {
+  const topics = await Question.distinct("tags");
+  const years = await Question.distinct("year");
+
+  res.json({
+    topics,
+    years: years.sort((a, b) => b - a)
   });
 });
 
