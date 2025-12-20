@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin – Questions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    .upload-box {
+      padding: 15px;
+      background: #eef3f9;
+      border: 1px dashed #aaa;
+      margin-bottom: 25px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    a {
+      text-decoration: none;
+      color: #007bff;
+    }
+    .logout {
+      margin-top: 20px;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <a class="logout" href="/admin/upload">Upload</a>
+  <a class="logout" href="/admin/logout">Logout</a>
+
+
+  <!-- Questions List -->
+  <h2>Questions</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Question</th>
+        <th>Subject</th>
+        <th>Year</th>
+        <th>Difficulty</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% questions.forEach(q => { %>
+      <tr>
+        <td><%= q.question.substring(0, 80) %>...</td>
+        <td><%= q.subject %></td>
+        <td><%= q.year %></td>
+        <td><%= q.difficulty %></td>
+        <td><%= q.isActive ? "Active" : "Inactive" %></td>
+        <td>
+          <a href="/admin/questions/<%= q._id %>/edit">Edit</a>
+          <form method="post" action="/admin/questions/<%= q._id %>/delete" style="display:inline">
+            <button>Delete</button>
+          </form>
+        </td>
+        
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+
+
+</div>
+</body>
+</html>

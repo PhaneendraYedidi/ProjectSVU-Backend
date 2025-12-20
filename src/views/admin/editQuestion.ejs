@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Question</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,.1);
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 16px;
+      display: block;
+    }
+    textarea, input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+    }
+    .option-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .option-row input[type="text"] {
+      flex: 1;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .checkbox {
+      margin-top: 15px;
+    }
+    button {
+      margin-top: 30px;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <h2>Edit Question</h2>
+
+  <form method="POST" action="/admin/questions/<%= question._id %>/edit">
+
+    <!-- Question -->
+    <label>Question</label>
+    <textarea name="question" rows="4" required><%= question.question %></textarea>
+
+    <!-- Options -->
+    <label>Options</label>
+    <% question.options.forEach(opt => { %>
+      <div class="option-row">
+        <!-- <input type="radio"
+               name="correctAnswer"
+               value="<%= opt.key %>"
+               <%= question.correctAnswer === opt.key ? "checked" : "" %>
+               required /> -->
+        <strong><%= opt.key %>.</strong>
+        <input type="text"
+               name="options[<%= opt.key %>]"
+               value="<%= opt.text %>"
+               required />
+      </div>
+    <% }) %>
+
+    <!-- Explanation -->
+    <label>Explanation</label>
+    <textarea name="explanation" rows="3"><%= question.explanation %></textarea>
+
+    <!-- Tags -->
+    <label>Tags (comma separated)</label>
+    <input type="text"
+           name="tags"
+           value="<%= question.tags.join(', ') %>" />
+
+    <!-- Metadata -->
+    <div class="meta-grid">
+      <div>
+        <label>Subject</label>
+        <input type="text" name="subject" value="<%= question.subject %>" required />
+      </div>
+
+      <div>
+        <label>Difficulty</label>
+        <select name="difficulty">
+          <% ["Easy","Medium","Hard"].forEach(d => { %>
+            <option value="<%= d %>" <%= question.difficulty === d ? "selected" : "" %>>
+              <%= d %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label>Type</label>
+        <input type="text" name="type" value="<%= question.type %>" />
+      </div>
+
+      <div>
+        <label>Source</label>
+        <input type="text" name="source" value="<%= question.source %>" />
+      </div>
+
+      <div>
+        <label>Year</label>
+        <input type="number" name="year" value="<%= question.year %>" />
+      </div>
+    </div>
+
+    <!-- Active -->
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" name="isActive" value="true"
+          <%= question.isActive ? "checked" : "" %> />
+        Active
+      </label>
+    </div>
+
+    <button type="submit">💾 Update Question</button>
+
+  </form>
+
+</div>
+</body>
+</html>
