@@ -11,21 +11,90 @@ const router = express.Router();
 /**
  * GET /api/practice/questions
  */
-router.get("/questions", auth, async (req: Request, res: Response) => {
-  const { mode, topic, year } = req.query;
+function isSameDay(d1: Date, d2: Date) {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+}
 
-  const filter: any = { isActive: true };
+router.get("/questions", auth, async (req, res) => {
+  try {
+    //const user = req.user;
+    const user = await User.findById(req.user!.id)
 
-  if (mode === "topic") filter.topic = topic;
-  if (mode === "year") filter.year = Number(year);
+      if (user === null) {
+        return res.status(400).json({ message: "User already exists" });
+      }
 
-  const questions = await Question.aggregate([
-    { $match: filter },
-    { $sample: { size: 5 } }
-  ]);
+    const { mode, topic, year, page = 1 } = req.query;
 
-  res.json(questions);
+    const now = new Date();
+
+    /* ---------------- FREE USER ---------------- */
+    if (user.subscription === "free") {
+      // Reset counter if new day
+      if (
+        !user.dailyFreeFetchDate ||
+        !isSameDay(user.dailyFreeFetchDate, now)
+      ) {
+        user.dailyFreeFetchDate = now;
+        user.dailyFreeFetchCount = 0;
+      }
+
+      // Stop if already fetched today
+      if ((user.dailyFreeFetchCount || 0) >= 1) {
+        return res.status(403).json({
+          message: "Daily free limit reached"
+        });
+      }
+
+      const match: any = { isActive: true };
+      if (mode === "topic" && topic) match.subject = topic;
+      if (mode === "year" && year) match.year = Number(year);
+
+      const questions = await Question.aggregate([
+        { $match: match },
+        { $sample: { size: 5 } }
+      ]);
+
+      user.dailyFreeFetchCount = 1;
+      await user.save();
+
+      return res.json({
+        subscription: "free",
+        questions
+      });
+    }
+
+    /* ---------------- PAID USER ---------------- */
+    const LIMIT = 20;
+    const skip = (Number(page) - 1) * LIMIT;
+
+    const match: any = { isActive: true };
+    if (mode === "topic" && topic) match.subject = topic;
+    if (mode === "year" && year) match.year = Number(year);
+
+    const questions = await Question.aggregate([
+      { $match: match },
+      { $sample: { size: 1000 } },
+      { $skip: skip },
+      { $limit: LIMIT }
+    ]);
+
+    return res.json({
+      subscription: "paid",
+      page: Number(page),
+      count: questions.length,
+      questions
+    });
+  } catch (err) {
+    console.error("Practice questions error:", err);
+    res.status(500).json({ message: "Failed to fetch questions" });
+  }
 });
+
 
 /**
  * POST /api/practice/submit

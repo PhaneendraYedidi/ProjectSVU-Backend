@@ -6,17 +6,39 @@ export interface IUser extends Document {
   email: string;
   password: string;
   bookmarks: mongoose.Types.ObjectId[];
-  subscription: string;
+  subscription: "free" | "paid";
+
+  // Free practice gating
+  dailyFreeFetchDate?: Date;
+  dailyFreeFetchCount?: number;
+
+  // Optional future use
+  isActive: boolean;
 }
 
 const UserSchema = new Schema<IUser>(
   {
-    name: String,
+    name: { type: String, required: true },
     phone: { type: String, unique: true },
     email: { type: String, unique: true },
     password: { type: String, required: true },
     bookmarks: [{ type: Schema.Types.ObjectId, ref: "Question" }],
-    subscription: { type: String, default: "free" }
+    subscription: {
+      type: String,
+      enum: ["free", "paid"],
+      default: "free"
+    },
+
+    dailyFreeFetchDate: Date,
+    dailyFreeFetchCount: {
+      type: Number,
+      default: 0
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true
+    }
   },
   { timestamps: true }
 );
