@@ -68,7 +68,7 @@ router.get("/questions", auth, async (req, res) => {
       });
     }
 
-    /* ---------------- PAID USER ---------------- */
+    /* ---------------- PREMIUM USER ---------------- */
     const LIMIT = 20;
     const skip = (Number(page) - 1) * LIMIT;
 
@@ -84,7 +84,7 @@ router.get("/questions", auth, async (req, res) => {
     ]);
 
     return res.json({
-      subscription: "paid",
+      subscription: "premium",
       page: Number(page),
       count: questions.length,
       questions
@@ -134,6 +134,15 @@ router.post("/submit", auth, async (req: Request, res: Response) => {
     explanation: question.explanation
   });
 });
+
+router.post("/subscription/upgrade", auth, async (req, res) => {
+  await User.findByIdAndUpdate(req.user!.id, {
+    subscription: "premium"
+  });
+
+  res.json({ message: "Subscription upgraded successfully" });
+});
+
 
 /**
  * POST /api/practice/bookmark

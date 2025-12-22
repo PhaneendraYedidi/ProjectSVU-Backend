@@ -8,6 +8,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import bookmarkRoutes from "./routes/bookmark.routes";
 import mockRoutes from "./routes/mock.routes";
+import dashboardRoutes from "./routes/dashboard.routes";
 
 const app = express();
 app.use(cors());
@@ -29,6 +30,7 @@ app.use("/admin",adminRoutes);
 // app.use("/admin", express.static(path.join(__dirname, "views")));
 app.use("/api/bookmarks",bookmarkRoutes)
 app.use("/api/mock", mockRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.get("/", (_req, res) => {
   res.send("ProjectSVU Backend Running 🚀");
 });
