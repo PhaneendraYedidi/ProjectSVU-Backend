@@ -7,6 +7,8 @@ export interface IUser extends Document {
   password: string;
   bookmarks: mongoose.Types.ObjectId[];
   subscription: "free" | "premium";
+  subscriptionStart: Date,
+  subscriptionEnd: Date
 
   // Free practice gating
   dailyFreeFetchDate?: Date;
@@ -33,6 +35,8 @@ const UserSchema = new Schema<IUser>(
       enum: ["free", "premium"],
       default: "free"
     },
+    subscriptionStart: Date,
+    subscriptionEnd: Date,
 
     dailyFreeFetchDate: Date,
     dailyFreeFetchCount: {

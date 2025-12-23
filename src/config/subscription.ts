@@ -1,0 +1,1 @@
+export const SUBSCRIPTION_DURATION_DAYS = 365;

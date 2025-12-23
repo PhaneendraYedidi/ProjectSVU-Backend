@@ -12,7 +12,7 @@ import dashboardRoutes from "./routes/dashboard.routes";
 import paymentsRoutes from "./routes/payment.routes";
 import bodyParser from "body-parser";
 import webhookRoutes from "./routes/webhook.routes";
-
+import userRoutes from "./routes/user.routes";
 const app = express();
 app.use(cors());
 app.use(cookieParser());
@@ -35,6 +35,7 @@ app.use("/api/bookmarks",bookmarkRoutes)
 app.use("/api/mock", mockRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/payments", paymentsRoutes);
+app.use("/api/users", userRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use(
   "/webhooks/razorpay",

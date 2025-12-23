@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { Request, Response } from "express";
 import User from "../models/User";
+import { SUBSCRIPTION_DURATION_DAYS } from "../config/subscription";
 
 export const razorpayWebhook = async (req: Request, res: Response) => {
   const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
@@ -46,8 +47,19 @@ const handlePaymentCaptured = async (event: any) => {
   const user = await User.findById(userId);
   if (!user) return;
 
-  // Upgrade subscription
+  const now = new Date();
   user.subscription = "premium";
+  if (user.subscriptionEnd && user.subscriptionEnd > now) {
+    user.subscriptionEnd.setDate(
+      user.subscriptionEnd.getDate() + SUBSCRIPTION_DURATION_DAYS
+    );
+  } else {
+    // Upgrade subscription
+    let expiry = new Date();
+    expiry.setDate(now.getDate() + SUBSCRIPTION_DURATION_DAYS);
+    user.subscriptionStart = now;
+    user.subscriptionEnd = expiry;
+  }
 
   // Referral reward
   if (referralCode) {
