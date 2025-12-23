@@ -14,6 +14,11 @@ export interface IUser extends Document {
 
   // Optional future use
   isActive: boolean;
+
+  referralCode: string;
+  referredBy?: mongoose.Types.ObjectId;
+  referralEarnings: number;
+  referralCount: number;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -38,6 +43,23 @@ const UserSchema = new Schema<IUser>(
     isActive: {
       type: Boolean,
       default: true
+    },
+
+    referralCode: {
+      type: String,
+      unique: true
+    },
+    referredBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User"
+    },
+    referralEarnings: {
+      type: Number,
+      default: 0
+    },
+    referralCount: {
+      type: Number,
+      default: 0
     }
   },
   { timestamps: true }

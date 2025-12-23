@@ -9,6 +9,9 @@ import cookieParser from "cookie-parser";
 import bookmarkRoutes from "./routes/bookmark.routes";
 import mockRoutes from "./routes/mock.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
+import paymentsRoutes from "./routes/payment.routes";
+import bodyParser from "body-parser";
+import webhookRoutes from "./routes/webhook.routes";
 
 const app = express();
 app.use(cors());
@@ -31,6 +34,13 @@ app.use("/admin",adminRoutes);
 app.use("/api/bookmarks",bookmarkRoutes)
 app.use("/api/mock", mockRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/payments", paymentsRoutes);
+app.use("/webhooks", webhookRoutes);
+app.use(
+  "/webhooks/razorpay",
+  bodyParser.raw({ type: "application/json" })
+);
+
 app.get("/", (_req, res) => {
   res.send("ProjectSVU Backend Running 🚀");
 });

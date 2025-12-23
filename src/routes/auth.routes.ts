@@ -2,14 +2,18 @@ import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User";
 import { generateToken } from "../utils/jwt";
+import crypto from "crypto";
 
 const router = express.Router();
+
+const generateReferralCode = () =>
+  crypto.randomBytes(4).toString("hex").toUpperCase();
 
 /**
  * POST /api/auth/signup
  */
 router.post("/signup", async (req: Request, res: Response) => {
-  const { name, phone, email, password } = req.body;
+  const { name, phone, email, password, referralCode } = req.body;
 
   const existingUser = await User.findOne({ $or: [{ phone }, { email }] });
   if (existingUser) {
@@ -17,12 +21,15 @@ router.post("/signup", async (req: Request, res: Response) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  const referrer = await User.findOne({ referralCode });
 
   const user = await User.create({
     name,
     phone,
     email,
-    password: hashedPassword
+    password: hashedPassword,
+    referralCode: generateReferralCode(),
+    referredBy: referrer ? referrer._id : undefined
   });
 
   const token = generateToken(user._id.toString());
