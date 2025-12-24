@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import Question from "../models/Question";
-import PracticeAttempt from "../models/PracticeAttempt";
+import QuestionAttempt from "../models/QuestionAttempt";
 import User from "../models/User";
 import auth from "../middleware/auth.middleware";
 import crypto from "crypto";
@@ -117,7 +117,7 @@ router.post("/submit", auth, async (req: Request, res: Response) => {
 
   const isCorrect = question.correctAnswer === selectedOption;
 
-  await PracticeAttempt.create({
+  await QuestionAttempt.create({
     userId,
     questionId,
     selectedOption,
@@ -307,7 +307,7 @@ router.post("/answer", async (req, res) => {
 
   const isCorrect = question.correctAnswer === selected;
 
-  await PracticeAttempt.create({
+  await QuestionAttempt.create({
     userId,
     sessionId,
     questionId,
@@ -335,7 +335,7 @@ router.get("/session/:sessionId/stats", async (req, res) => {
     return res.status(404).json({ message: "Session not found" });
   }
 
-  const attempts = await PracticeAttempt.find({ sessionId });
+  const attempts = await QuestionAttempt.find({ sessionId });
 
   const attempted = attempts.length;
   const correct = attempts.filter(a => a.isCorrect).length;

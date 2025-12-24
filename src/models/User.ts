@@ -5,16 +5,17 @@ export interface IUser extends Document {
   phone: string;
   email: string;
   password: string;
+
   bookmarks: mongoose.Types.ObjectId[];
+
   subscription: "free" | "premium";
-  subscriptionStart: Date,
-  subscriptionEnd: Date
+  subscriptionStart?: Date;
+  subscriptionEnd?: Date;
 
-  // Free practice gating
+  // Free usage gating
   dailyFreeFetchDate?: Date;
-  dailyFreeFetchCount?: number;
+  dailyFreeFetchCount: number;
 
-  // Optional future use
   isActive: boolean;
 
   referralCode: string;
@@ -26,15 +27,33 @@ export interface IUser extends Document {
 const UserSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
-    phone: { type: String, unique: true },
-    email: { type: String, unique: true },
+
+    phone: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
+
+    email: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      index: true
+    },
+
     password: { type: String, required: true },
-    bookmarks: [{ type: Schema.Types.ObjectId, ref: "Question" }],
+
+    bookmarks: [
+      { type: Schema.Types.ObjectId, ref: "Question" }
+    ],
+
     subscription: {
       type: String,
       enum: ["free", "premium"],
-      default: "free"
+      default: "free",
+      index: true
     },
+
     subscriptionStart: Date,
     subscriptionEnd: Date,
 
@@ -46,21 +65,27 @@ const UserSchema = new Schema<IUser>(
 
     isActive: {
       type: Boolean,
-      default: true
+      default: true,
+      index: true
     },
 
     referralCode: {
       type: String,
-      unique: true
+      unique: true,
+      required: true,
+      index: true
     },
+
     referredBy: {
       type: Schema.Types.ObjectId,
       ref: "User"
     },
+
     referralEarnings: {
       type: Number,
       default: 0
     },
+
     referralCount: {
       type: Number,
       default: 0

@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import PracticeAttempt from "../models/PracticeAttempt";
+import QuestionAttempt from "../models/QuestionAttempt";
 import auth from "../middleware/auth.middleware";
 import { MockTest } from "../models/MockTest";
 
@@ -15,9 +15,9 @@ router.get("/overview", auth, async (req, res) => {
     avgMockScore,
     subjectStats
   ] = await Promise.all([
-    PracticeAttempt.countDocuments({ userId }),
+    QuestionAttempt.countDocuments({ userId }),
 
-    PracticeAttempt.countDocuments({
+    QuestionAttempt.countDocuments({
       userId,
       isCorrect: true
     }),
@@ -37,7 +37,7 @@ router.get("/overview", auth, async (req, res) => {
       }
     ]),
 
-    PracticeAttempt.aggregate([
+    QuestionAttempt.aggregate([
       { $match: { userId } },
       {
         $group: {

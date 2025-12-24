@@ -3,7 +3,7 @@ import crypto from "crypto";
 import Question from "../models/Question";
 import PracticeSession from "../models/PracticeSession";
 import User from "../models/User";
-import PracticeAttempt from "../models/PracticeAttempt";
+import QuestionAttempt from "../models/QuestionAttempt";
 import { MockTest } from "../models/MockTest";
 import auth from "../middleware/auth.middleware";
 
