@@ -6,10 +6,11 @@ import User from "../models/User";
 import QuestionAttempt from "../models/QuestionAttempt";
 import { MockTest } from "../models/MockTest";
 import auth from "../middleware/auth.middleware";
+import { enforceSubscription } from "../middleware/subscription.middleware";
 
 const router = Router();
 
-router.post("/start", auth, async (req, res) => {
+router.post("/start", auth, enforceSubscription({ requirePremium: true }),async (req, res) => {
   const user = req.user!;
 
   const TOTAL_QUESTIONS = 20;

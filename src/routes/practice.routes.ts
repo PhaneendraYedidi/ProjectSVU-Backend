@@ -5,6 +5,7 @@ import User from "../models/User";
 import auth from "../middleware/auth.middleware";
 import crypto from "crypto";
 import PracticeSession from "../models/PracticeSession";
+import { enforceSubscription } from "../middleware/subscription.middleware";
 
 const router = express.Router();
 
@@ -19,13 +20,13 @@ function isSameDay(d1: Date, d2: Date) {
   );
 }
 
-router.get("/questions", auth, async (req, res) => {
+router.get("/questions", auth, enforceSubscription({ freeDailyLimit: 1 }), async (req, res) => {
   try {
     //const user = req.user;
     const user = await User.findById(req.user!.id)
 
       if (user === null) {
-        return res.status(400).json({ message: "User already exists" });
+        return res.status(400).json({ message: "User not exists" });
       }
 
     const { mode, topic, year, page = 1 } = req.query;
