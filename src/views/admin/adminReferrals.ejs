@@ -1,0 +1,30 @@
+<h1>Referral Dashboard</h1>
+
+<% referrers.forEach(r => { %>
+  <div style="border:1px solid #ccc; padding:10px; margin-bottom:15px">
+    <h3><%= r.name %> (<%= r.email %>)</h3>
+    <p>
+      Referral Code: <b><%= r.referralCode %></b><br/>
+      Total Referrals: <%= r.referralCount %><br/>
+      Total Earnings: ₹<%= r.referralEarnings %>
+    </p>
+
+    <table border="1" width="100%">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Subscription</th>
+        <th>Joined On</th>
+      </tr>
+
+      <% r.referredUsers.forEach(u => { %>
+        <tr>
+          <td><%= u.name %></td>
+          <td><%= u.email %></td>
+          <td><%= u.subscription %></td>
+          <td><%= new Date(u.createdAt).toDateString() %></td>
+        </tr>
+      <% }) %>
+    </table>
+  </div>
+<% }) %>

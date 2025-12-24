@@ -1,0 +1,25 @@
+<h1>Admin Dashboard</h1>
+
+<p>Total Users: <%= totalUsers %></p>
+<p>Premium Users: <%= premiumUsers %></p>
+<p>Free Users: <%= freeUsers %></p>
+<p>Total Revenue (₹): <%= totalRevenue %></p>
+<p>Total Referral Earnings (₹): <%= totalReferralEarnings %></p>
+
+<h3>Top Referrers</h3>
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Referrals</th>
+    <th>Earnings</th>
+  </tr>
+  <% topReferrers.forEach(r => { %>
+    <tr>
+      <td><%= r.name %></td>
+      <td><%= r.email %></td>
+      <td><%= r.referralCount %></td>
+      <td>₹<%= r.referralEarnings %></td>
+    </tr>
+  <% }) %>
+</table>

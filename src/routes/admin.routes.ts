@@ -8,6 +8,7 @@ import {adminAuth}  from "../middleware/adminAuth.middleware";
 const router = express.Router();
 import Admin from "../models/Admin";
 import bcrypt from "bcrypt";
+import { adminDashboard, adminReferralDashboard } from "../controllers/adminDashboard.controller";
 
 /* SIGNUP PAGE */
 router.get("/signup", (req, res) => {
@@ -191,6 +192,9 @@ router.post(
     res.redirect("/admin/questions");
   }
 );
+
+router.get("/dashboard", adminAuth, adminDashboard);
+router.get("/referrals", adminAuth, adminReferralDashboard);
 
 
 export default router;
