@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User";
-import { generateToken } from "../utils/jwt";
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utils/jwt";
 import crypto from "crypto";
 
 const router = express.Router();
@@ -32,7 +32,10 @@ router.post("/signup", async (req: Request, res: Response) => {
     referredBy: referrer ? referrer._id : undefined
   });
 
-  const token = generateToken(user._id.toString());
+  const token = signAccessToken({
+    userId: user._id,
+    role: "user"
+  });
 
   res.status(201).json({
     token,
@@ -49,29 +52,84 @@ router.post("/signup", async (req: Request, res: Response) => {
  * POST /api/auth/login
  */
 router.post("/login", async (req: Request, res: Response) => {
+
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email, isActive: true });
   if (!user) {
-    return res.status(400).json({ message: "Invalid credentials" });
+    return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid credentials" });
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  const token = generateToken(user._id.toString());
+  const accessToken = signAccessToken({
+    userId: user._id,
+    role: "user"
+  });
+
+  const refreshToken = signRefreshToken({
+    userId: user._id
+  });
 
   res.json({
-    token,
     user: {
       id: user._id,
       name: user.name,
       phone: user.phone,
       email: user.email
+    },
+    accessToken,
+    refreshToken,
+    subscription: {
+      plan: user.subscription,
+      expiresAt: user.subscriptionEnd
     }
   });
 });
+
+/**
+ * POST /api/auth/refresh
+ */
+router.post("/refresh", async (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "Refresh token required" });
+  }
+
+  try {
+    const decoded = verifyRefreshToken(refreshToken) as any;
+
+    const user = await User.findById(decoded.userId);
+    if (!user || !user.isActive) {
+      return res.status(401).json({ message: "Invalid user" });
+    }
+
+    const newAccessToken = signAccessToken({
+      userId: user._id,
+      role: "user"
+    });
+
+    const newRefreshToken = signRefreshToken({
+      userId: user._id
+    });
+
+    res.json({
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      subscription: {
+        plan: user.subscription,
+        expiresAt: user.subscriptionEnd
+      }
+    });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid refresh token" });
+  }
+});
+
+
 
 export default router;

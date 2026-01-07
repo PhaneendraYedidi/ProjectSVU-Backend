@@ -35,7 +35,7 @@ app.use("/api/bookmarks",bookmarkRoutes)
 app.use("/api/mock", mockRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/payments", paymentsRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use(
   "/webhooks/razorpay",

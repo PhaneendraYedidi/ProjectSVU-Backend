@@ -5,7 +5,7 @@ import { MockTest } from "../models/MockTest";
 
 const router = express.Router();
 
-router.get("/overview", auth, async (req, res) => {
+router.get("/summary", auth, async (req, res) => {
   const userId = req.user!.id;
 
   const [

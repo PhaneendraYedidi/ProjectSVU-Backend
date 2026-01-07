@@ -292,7 +292,7 @@ router.post("/answer", async (req, res) => {
   }
 
   // Prevent duplicate attempts
-  const existingAttempt = await PracticeAttempt.findOne({
+  const existingAttempt = await QuestionAttempt.findOne({
     sessionId,
     questionId
   });
