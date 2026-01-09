@@ -19,3 +19,5 @@ Next Steps:
 3️⃣ Subscription upgrade + enforcement
 4️⃣ Admin revenue dashboard
 5️⃣ AI layer
+
+Antigravity IDE
