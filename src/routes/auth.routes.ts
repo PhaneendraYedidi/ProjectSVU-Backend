@@ -21,7 +21,10 @@ router.post("/signup", async (req: Request, res: Response) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const referrer = await User.findOne({ referralCode });
+  let referrer;
+  if (referralCode) {
+    referrer = await User.findOne({ referralCode });
+  }
 
   const user = await User.create({
     name,
@@ -31,6 +34,12 @@ router.post("/signup", async (req: Request, res: Response) => {
     referralCode: generateReferralCode(),
     referredBy: referrer ? referrer._id : undefined
   });
+
+  if (referrer) {
+    referrer.referralCount = (referrer.referralCount || 0) + 1;
+    referrer.referralEarnings = (referrer.referralEarnings || 0) + 50;
+    await referrer.save();
+  }
 
   const token = signAccessToken({
     userId: user._id,

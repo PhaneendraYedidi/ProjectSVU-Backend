@@ -1,14 +1,16 @@
 import User from "../models/User";
 
 export const getReferralDashboard = async (req, res) => {
-  const user = req.user!;
+  const userId = req.user!.id;
 
-  const referredUsers = await User.find({ referredBy: user._id })
+  const user = await User.findById(userId);
+
+  const referredUsers = await User.find({ referredBy: userId })
     .select("name email subscription createdAt");
 
   res.json({
-    referralCode: user.referralCode,
-    referralCount: user.referralCount,
+    referralCode: user!.referralCode,
+    referralCount: user!.referralCount,
     referralEarnings: user.referralEarnings,
     referredUsers
   });
