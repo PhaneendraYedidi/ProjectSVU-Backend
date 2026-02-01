@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import mongoose from "mongoose";
 import QuestionAttempt from "../models/QuestionAttempt";
 import auth from "../middleware/auth.middleware";
 import { MockTest } from "../models/MockTest";
@@ -6,7 +7,8 @@ import { MockTest } from "../models/MockTest";
 const router = express.Router();
 
 router.get("/summary", auth, async (req, res) => {
-  const userId = req.user!.id;
+  const userIdStr = req.user!.id;
+  const userId = new mongoose.Types.ObjectId(userIdStr);
 
   const [
     totalPractice,
@@ -15,15 +17,15 @@ router.get("/summary", auth, async (req, res) => {
     avgMockScore,
     subjectStats
   ] = await Promise.all([
-    QuestionAttempt.countDocuments({ userId }),
+    QuestionAttempt.countDocuments({ userId: userIdStr }),
 
     QuestionAttempt.countDocuments({
-      userId,
+      userId: userIdStr,
       isCorrect: true
     }),
 
     MockTest.countDocuments({
-      user: userId,
+      user: userIdStr,
       status: "SUBMITTED"
     }),
 
@@ -59,7 +61,7 @@ router.get("/summary", auth, async (req, res) => {
         : Math.round((correctPractice / totalPractice) * 100),
 
     totalMocks,
-    avgMockScore: avgMockScore[0]?.avgScore ?? 0,
+    avgMockScore: avgMockScore[0]?.avgScore ? Math.round(avgMockScore[0].avgScore * 10) / 10 : 0,
     subjectStats
   });
 });
