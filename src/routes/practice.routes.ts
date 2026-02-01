@@ -202,13 +202,40 @@ router.post("/subscription/upgrade", auth, async (req, res) => {
  * POST /api/practice/bookmark
  */
 router.post("/bookmark", auth, async (req: Request, res: Response) => {
-  const { userId, questionId } = req.body;
+  const { questionId } = req.body;
+  const userId = req.user!.id;
 
   await User.findByIdAndUpdate(userId, {
     $addToSet: { bookmarks: questionId }
   });
 
   res.json({ success: true });
+});
+
+/**
+ * GET /api/practice/bookmarks
+ */
+router.get("/bookmarks", auth, async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.user!.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const bookmarks = await Question.find({
+      _id: { $in: user.bookmarks }
+    });
+
+    // Transform if needed to match frontend expectation (optional)
+    // Front end expects: options as [{key, text}] or just strings. 
+    // Question model usually stores options as strings or objects.
+    // Let's return as is.
+
+    res.json({ bookmarks });
+  } catch (err) {
+    console.error("Failed to fetch bookmarks:", err);
+    res.status(500).json({ message: "Failed to fetch bookmarks" });
+  }
 });
 
 /* START SESSION */
