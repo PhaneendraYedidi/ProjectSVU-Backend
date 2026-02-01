@@ -52,7 +52,7 @@ router.get("/questions", auth, enforceSubscription({ freeDailyLimit: 1 }), async
       }
 
       const match: any = { isActive: true };
-      if (mode === "topic" && topic) match.subject = topic;
+      if (mode === "topic" && topic) match.tags = topic;
       if (mode === "year" && year) match.year = Number(year);
 
       const questions = await Question.aggregate([
@@ -74,7 +74,7 @@ router.get("/questions", auth, enforceSubscription({ freeDailyLimit: 1 }), async
     const skip = (Number(page) - 1) * LIMIT;
 
     const match: any = { isActive: true };
-    if (mode === "topic" && topic) match.subject = topic;
+    if (mode === "topic" && topic) match.tags = topic;
     if (mode === "year" && year) match.year = Number(year);
 
     const questions = await Question.aggregate([
