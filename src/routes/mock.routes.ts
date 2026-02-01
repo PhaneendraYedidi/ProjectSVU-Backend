@@ -10,13 +10,19 @@ import { enforceSubscription } from "../middleware/subscription.middleware";
 
 const router = Router();
 
-router.post("/start", auth, enforceSubscription({ requirePremium: true }),async (req, res) => {
+router.post("/start", auth, enforceSubscription({ requirePremium: true }), async (req, res) => {
   const user = req.user!;
+  const { topic, subject } = req.body;
 
   const TOTAL_QUESTIONS = 20;
 
+  const match: any = { isActive: true };
+  if (topic || subject) {
+    match.subject = topic || subject;
+  }
+
   const questions = await Question.aggregate([
-    { $match: { isActive: true } },
+    { $match: match },
     { $sample: { size: TOTAL_QUESTIONS } }
   ]);
 

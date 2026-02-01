@@ -1,23 +1,54 @@
-type Mode =
-  | "practice"       // general practice (random)
-  | "revise"         // weak areas revision
-  | "topic"          // topic-wise practice
-  | "year"           // year-wise questions
-  | "mock"           // full mock test
+# ProjectSVU-Backend
 
+Backend service for StudySwipe (ProjectSVU) built with Node.js, Express, and MongoDB.
 
-To run the server with debugging (vscode debugging)
-    "dev": "ts-node src/server.ts",
-To run the server without debugging
-    "dev": "nodemon --exec ts-node src/server.ts",
+## 🚀 Features Implemented
 
-RazorPay playground - https://razorpay.com/docs/playground/
+### 1. Core Learning
+- **Practice Mode**: Fetch questions by random, topic-wise, or year-wise.
+- **Mock Tests**: Full exam simulation with time limits (`POST /api/mock/start`).
+- **Bookmarks**: Save questions for later revision.
 
-Next Steps:
-1️⃣ Mock Test Engine (server evaluation)
-2️⃣ Dashboard analytics (mixed data)
-3️⃣ Subscription upgrade + enforcement
-4️⃣ Admin revenue dashboard
-5️⃣ AI layer
+### 2. User & Profile
+- **Auth**: JWT-based login/signup (Phone/OTP flow mocked or password based).
+- **Profile Management**: Update profile details (`PUT /api/user/profile`).
+- **Subscription**: Razorpay integration for Premium upgrades.
 
-Antigravity IDE
+### 3. Gamification (New)
+- **Challenges**: 1v1 Async Quiz Battles.
+    - Create Challenge: `POST /api/challenges/create` -> Returns access code.
+    - Join Challenge: `POST /api/challenges/join` -> with code.
+    - Submit Score: `POST /api/challenges/:id/submit`.
+
+## 🛠 Setup & Run
+
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Environment Variables**
+   Ensure `.env` contains:
+   ```
+   PORT=5001
+   MONGO_URI=mongodb://localhost:27017/projectsvu
+   JWT_SECRET=your_jwt_secret
+   ```
+
+3. **Run Server**
+   ```bash
+   # Development (with reload)
+   npm run dev
+   ```
+
+## ⏭ Next Steps / TODOs
+
+- [ ] **Real-time Challenges**: implementation currently uses polling. Upgrade to `socket.io` for live updates.
+- [ ] **Admin Dashboard**: Expand admin revenue and content management routes.
+- [ ] **AI Layer**: Implement finding weak areas (`/revise` mode).
+
+## 🧑‍💻 Code Structure
+- `src/models`: Mongoose Schemas (User, Question, Challenge, MockTest).
+- `src/routes`: API Route definitions.
+- `src/controllers`: Business logic.
+- `src/middleware`: Auth and Subscription enforcement.

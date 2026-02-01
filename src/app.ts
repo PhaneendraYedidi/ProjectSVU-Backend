@@ -13,6 +13,7 @@ import paymentsRoutes from "./routes/payment.routes";
 import bodyParser from "body-parser";
 import webhookRoutes from "./routes/webhook.routes";
 import userRoutes from "./routes/user.routes";
+import challengeRoutes from "./routes/challenge.routes";
 const app = express();
 app.use(cors());
 app.use(cookieParser());
@@ -29,13 +30,14 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/practice", practiceRoutes);
 //app.use("/api/admin", adminRoutes);
-app.use("/admin",adminRoutes);
+app.use("/admin", adminRoutes);
 // app.use("/admin", express.static(path.join(__dirname, "views")));
-app.use("/api/bookmarks",bookmarkRoutes)
+app.use("/api/bookmarks", bookmarkRoutes)
 app.use("/api/mock", mockRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/challenges", challengeRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use(
   "/webhooks/razorpay",
