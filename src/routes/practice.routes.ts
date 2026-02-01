@@ -25,9 +25,9 @@ router.get("/questions", auth, enforceSubscription({ freeDailyLimit: 1 }), async
     //const user = req.user;
     const user = await User.findById(req.user!.id)
 
-      if (user === null) {
-        return res.status(400).json({ message: "User not exists" });
-      }
+    if (user === null) {
+      return res.status(400).json({ message: "User not exists" });
+    }
 
     const { mode, topic, year, page = 1 } = req.query;
 
@@ -54,6 +54,8 @@ router.get("/questions", auth, enforceSubscription({ freeDailyLimit: 1 }), async
       const match: any = { isActive: true };
       if (mode === "topic" && topic) match.tags = topic;
       if (mode === "year" && year) match.year = Number(year);
+
+      // If no mode/topic/year, it's just random (default match)
 
       const questions = await Question.aggregate([
         { $match: match },
@@ -102,7 +104,6 @@ router.get("/questions", auth, enforceSubscription({ freeDailyLimit: 1 }), async
  */
 router.post("/submit", auth, async (req: Request, res: Response) => {
   const {
-    userId,
     questionId,
     selectedOption,
     timeTaken,
@@ -110,6 +111,11 @@ router.post("/submit", auth, async (req: Request, res: Response) => {
     topic,
     year
   } = req.body;
+
+  let userId = req.body.userId;
+  if (!userId && req.user) {
+    userId = req.user.id;
+  }
 
   const question = await Question.findById(questionId);
   if (!question) {
@@ -134,6 +140,53 @@ router.post("/submit", auth, async (req: Request, res: Response) => {
     correctOption: question.correctAnswer,
     explanation: question.explanation
   });
+});
+
+/**
+ * POST /api/practice/submit-batch
+ */
+router.post("/submit-batch", auth, async (req: Request, res: Response) => {
+  const { attempts } = req.body;
+  // attempts: Array<{ questionId, selectedOption, isCorrect, timeTaken, mode, topic, year }>
+
+  if (!attempts || !Array.isArray(attempts) || attempts.length === 0) {
+    return res.status(400).json({ message: "No attempts provided" });
+  }
+
+  const userId = req.user!.id;
+
+  // Optional: Verify questions exist? For batch efficiency we might skip individual verification or do `Question.find({ _id: { $in: ids } })`
+  // But trusting client for 'isCorrect' might be risky. 
+  // Ideally, backend should re-verify 'isCorrect'.
+  // For this tasks scope, let's re-verify correctness to be safe.
+
+  const questionIds = attempts.map((a: any) => a.questionId);
+  const questions = await Question.find({ _id: { $in: questionIds } });
+  const questionMap = new Map(questions.map(q => [q._id.toString(), q]));
+
+  const attemptDocs = attempts.map((attempt: any) => {
+    const q = questionMap.get(attempt.questionId);
+    if (!q) return null; // Skip invalid questions
+
+    const isCorrect = q.correctAnswer === attempt.selectedOption; // Re-verify
+
+    return {
+      userId,
+      questionId: attempt.questionId,
+      selectedOption: attempt.selectedOption,
+      isCorrect, // Override client's isCorrect with server verification
+      timeTaken: attempt.timeTaken || 0,
+      mode: attempt.mode || "practice",
+      topic: q.subject || attempt.topic,
+      year: q.year || attempt.year
+    };
+  }).filter(Boolean);
+
+  if (attemptDocs.length > 0) {
+    await QuestionAttempt.insertMany(attemptDocs);
+  }
+
+  res.json({ message: "Batch submitted", count: attemptDocs.length });
 });
 
 router.post("/subscription/upgrade", auth, async (req, res) => {

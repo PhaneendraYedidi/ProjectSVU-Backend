@@ -54,7 +54,7 @@ router.get("/summary", auth, async (req, res) => {
   ]);
 
   res.json({
-    totalPractice,
+    totalAttempted: totalPractice,
     accuracy:
       totalPractice === 0
         ? 0
