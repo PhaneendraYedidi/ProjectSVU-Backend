@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/server.ts",
-    "build": "tsc",
+    "build": "tsc && npm run copy-views",
+    "copy-views": "copyfiles -u 1 \"src/views/**/*.ejs\" dist",
     "start": "node dist/server.js"
   },
   "keywords": [],
@@ -37,6 +38,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^25.0.1",
     "@types/xlsx": "^0.0.36",
+    "copyfiles": "^2.4.1",
     "nodemon": "^3.1.11",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.2",
