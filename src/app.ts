@@ -49,8 +49,22 @@ app.get("/", (_req, res) => {
 });
 
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-//app.use(express.static("public"));
+const viewsPath = path.join(__dirname, "views");
+app.set("views", viewsPath);
+// app.use(express.static("public"));
 
+import fs from "fs";
+try {
+  console.log("Views directory:", viewsPath);
+  const adminViews = path.join(viewsPath, "admin");
+  if (fs.existsSync(adminViews)) {
+    console.log("Admin views:", fs.readdirSync(adminViews));
+  } else {
+    console.log("Admin views directory does not exist!");
+    console.log("Root views contents:", fs.readdirSync(viewsPath));
+  }
+} catch (err) {
+  console.error("Error checking views:", err);
+}
 
 export default app;
