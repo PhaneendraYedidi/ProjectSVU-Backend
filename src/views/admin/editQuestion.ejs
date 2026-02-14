@@ -1,145 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-bs-theme="dark">
+
 <head>
-  <title>Edit Question</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f4f7;
-    }
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,.1);
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    label {
-      font-weight: bold;
-      margin-top: 16px;
-      display: block;
-    }
-    textarea, input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-    }
-    .option-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-top: 10px;
-    }
-    .option-row input[type="text"] {
-      flex: 1;
-    }
-    .meta-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .checkbox {
-      margin-top: 15px;
-    }
-    button {
-      margin-top: 30px;
-      padding: 12px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Question | ProjectSVU Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 </head>
 
 <body>
-<div class="container">
 
-  <h2>Edit Question</h2>
+  <div class="container-fluid">
+    <div class="row">
 
-  <form method="POST" action="/admin/questions/<%= question._id %>/edit">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse p-3">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+          <ion-icon name="planet" class="fs-4 me-2"></ion-icon>
+          <span class="fs-5 fw-bold">ProjectSVU</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="/admin/dashboard" class="nav-link link-body-emphasis">
+              <ion-icon name="grid-outline"></ion-icon> Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="/admin/questions" class="nav-link active">
+              <ion-icon name="list-outline"></ion-icon> Questions
+            </a>
+          </li>
+          <li>
+            <a href="/admin/upload" class="nav-link link-body-emphasis">
+              <ion-icon name="cloud-upload-outline"></ion-icon> Upload
+            </a>
+          </li>
+          <li>
+            <a href="/admin/referrals" class="nav-link link-body-emphasis">
+              <ion-icon name="people-outline"></ion-icon> Referrals
+            </a>
+          </li>
+        </ul>
+        <hr>
+        <div class="dropdown">
+          <a href="/admin/logout" class="d-flex align-items-center link-body-emphasis text-decoration-none text-danger">
+            <ion-icon name="log-out-outline" class="me-2"></ion-icon> <strong>Sign Out</strong>
+          </a>
+        </div>
+      </nav>
 
-    <!-- Question -->
-    <label>Question</label>
-    <textarea name="question" rows="4" required><%= question.question %></textarea>
+      <!-- Main Content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1 class="h2">Edit Question</h1>
+          <a href="/admin/questions" class="btn btn-outline-secondary">
+            <ion-icon name="arrow-back-outline" class="me-1"></ion-icon> Back
+          </a>
+        </div>
 
-    <!-- Options -->
-    <label>Options</label>
-    <% question.options.forEach(opt => { %>
-      <div class="option-row">
-        <!-- <input type="radio"
-               name="correctAnswer"
-               value="<%= opt.key %>"
-               <%= question.correctAnswer === opt.key ? "checked" : "" %>
-               required /> -->
-        <strong><%= opt.key %>.</strong>
-        <input type="text"
-               name="options[<%= opt.key %>]"
-               value="<%= opt.text %>"
-               required />
-      </div>
-    <% }) %>
+        <form method="POST" action="/admin/questions/<%= question._id %>/edit">
+          <div class="row g-4">
 
-    <!-- Explanation -->
-    <label>Explanation</label>
-    <textarea name="explanation" rows="3"><%= question.explanation %></textarea>
+            <!-- Left Col -->
+            <div class="col-lg-8">
+              <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-transparent border-0">
+                  <h5 class="mb-0">Content</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label class="form-label">Question Text</label>
+                    <textarea name="question" class="form-control" rows="4" required><%= question.question %></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Explanation</label>
+                    <textarea name="explanation" class="form-control" rows="3"><%= question.explanation %></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Tags</label>
+                    <input type="text" name="tags" class="form-control" value="<%= question.tags.join(', ') %>"
+                      placeholder="e.g. History, Politics">
+                  </div>
+                </div>
+              </div>
 
-    <!-- Tags -->
-    <label>Tags (comma separated)</label>
-    <input type="text"
-           name="tags"
-           value="<%= question.tags.join(', ') %>" />
+              <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-0">
+                  <h5 class="mb-0">Options</h5>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <% question.options.forEach(opt=> { %>
+                      <div class="col-md-6">
+                        <label class="form-label">Option <%= opt.key %></label>
+                        <div class="input-group">
+                          <span class="input-group-text fw-bold">
+                            <%= opt.key %>
+                          </span>
+                          <input type="text" name="options[<%= opt.key %>]" class="form-control" value="<%= opt.text %>"
+                            required>
+                        </div>
+                      </div>
+                      <% }) %>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    <!-- Metadata -->
-    <div class="meta-grid">
-      <div>
-        <label>Subject</label>
-        <input type="text" name="subject" value="<%= question.subject %>" required />
-      </div>
+            <!-- Right Col -->
+            <div class="col-lg-4">
+              <div class="card shadow-sm border-0">
+                <div class="card-header bg-transparent border-0">
+                  <h5 class="mb-0">Settings</h5>
+                </div>
+                <div class="card-body">
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" name="isActive" value="true" role="switch"
+                      id="isActiveSwitch" <%=question.isActive ? "checked" : "" %>>
+                    <label class="form-check-label" for="isActiveSwitch">Is Active?</label>
+                  </div>
 
-      <div>
-        <label>Difficulty</label>
-        <select name="difficulty">
-          <% ["Easy","Medium","Hard"].forEach(d => { %>
-            <option value="<%= d %>" <%= question.difficulty === d ? "selected" : "" %>>
-              <%= d %>
-            </option>
-          <% }) %>
-        </select>
-      </div>
+                  <div class="mb-3">
+                    <label class="form-label">Subject</label>
+                    <input type="text" name="subject" class="form-control" value="<%= question.subject %>" required>
+                  </div>
 
-      <div>
-        <label>Type</label>
-        <input type="text" name="type" value="<%= question.type %>" />
-      </div>
+                  <div class="mb-3">
+                    <label class="form-label">Difficulty</label>
+                    <select name="difficulty" class="form-select">
+                      <% ["Easy","Medium","Hard"].forEach(d=> { %>
+                        <option value="<%= d %>" <%=question.difficulty===d ? "selected" : "" %>><%= d %>
+                        </option>
+                        <% }) %>
+                    </select>
+                  </div>
 
-      <div>
-        <label>Source</label>
-        <input type="text" name="source" value="<%= question.source %>" />
-      </div>
+                  <div class="mb-3">
+                    <label class="form-label">Type</label>
+                    <input type="text" name="type" class="form-control" value="<%= question.type %>">
+                  </div>
 
-      <div>
-        <label>Year</label>
-        <input type="number" name="year" value="<%= question.year %>" />
-      </div>
+                  <div class="mb-3">
+                    <label class="form-label">Source</label>
+                    <input type="text" name="source" class="form-control" value="<%= question.source %>">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Year</label>
+                    <input type="number" name="year" class="form-control" value="<%= question.year %>">
+                  </div>
+
+                  <hr>
+                  <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </main>
+
     </div>
+  </div>
 
-    <!-- Active -->
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" name="isActive" value="true"
-          <%= question.isActive ? "checked" : "" %> />
-        Active
-      </label>
-    </div>
-
-    <button type="submit">💾 Update Question</button>
-
-  </form>
-
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

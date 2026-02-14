@@ -51,7 +51,7 @@ app.get("/", (_req, res) => {
 app.set("view engine", "ejs");
 const viewsPath = path.join(__dirname, "views");
 app.set("views", viewsPath);
-// app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "../public")));
 
 import fs from "fs";
 try {

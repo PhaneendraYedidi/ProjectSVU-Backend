@@ -1,25 +1,250 @@
-<h1>Admin Dashboard</h1>
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
 
-<p>Total Users: <%= totalUsers %></p>
-<p>Premium Users: <%= premiumUsers %></p>
-<p>Free Users: <%= freeUsers %></p>
-<p>Total Revenue (₹): <%= totalRevenue %></p>
-<p>Total Referral Earnings (₹): <%= totalReferralEarnings %></p>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | ProjectSVU Admin</title>
 
-<h3>Top Referrers</h3>
-<table border="1">
-  <tr>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Referrals</th>
-    <th>Earnings</th>
-  </tr>
-  <% topReferrers.forEach(r => { %>
-    <tr>
-      <td><%= r.name %></td>
-      <td><%= r.email %></td>
-      <td><%= r.referralCount %></td>
-      <td>₹<%= r.referralEarnings %></td>
-    </tr>
-  <% }) %>
-</table>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Ionicons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container-fluid">
+    <div class="row">
+
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse p-3">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+          <ion-icon name="planet" class="fs-4 me-2"></ion-icon>
+          <span class="fs-5 fw-bold">ProjectSVU</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="/admin/dashboard" class="nav-link active" aria-current="page">
+              <ion-icon name="grid-outline"></ion-icon>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="/admin/questions" class="nav-link link-body-emphasis">
+              <ion-icon name="list-outline"></ion-icon>
+              Questions
+            </a>
+          </li>
+          <li>
+            <a href="/admin/upload" class="nav-link link-body-emphasis">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              Upload
+            </a>
+          </li>
+          <li>
+            <a href="/admin/referrals" class="nav-link link-body-emphasis">
+              <ion-icon name="people-outline"></ion-icon>
+              Referrals
+            </a>
+          </li>
+        </ul>
+        <hr>
+        <div class="dropdown">
+          <a href="/admin/logout" class="d-flex align-items-center link-body-emphasis text-decoration-none text-danger">
+            <ion-icon name="log-out-outline" class="me-2"></ion-icon>
+            <strong>Sign Out</strong>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+        <div
+          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Dashboard</h1>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm bg-body-tertiary">
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-body-secondary text-uppercase">Total Revenue</h6>
+                <h2 class="card-title fw-bold">₹<%= totalRevenue %>
+                </h2>
+                <div class="text-success small">
+                  <ion-icon name="trending-up-outline"></ion-icon> +12.5% vs last month
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm bg-body-tertiary">
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-body-secondary text-uppercase">Active Premium Users</h6>
+                <h2 class="card-title fw-bold">
+                  <%= premiumUsers %>
+                </h2>
+                <div class="text-secondary small">
+                  Out of <%= totalUsers %> total users
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm bg-body-tertiary">
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-body-secondary text-uppercase">Referral Earnings</h6>
+                <h2 class="card-title fw-bold">₹<%= totalReferralEarnings %>
+                </h2>
+                <div class="text-secondary small">
+                  Distributed to partners
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">Revenue Growth</h5>
+              </div>
+              <div class="card-body">
+                <div class="chart-container">
+                  <canvas id="revenueChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">Users</h5>
+              </div>
+              <div class="card-body d-flex align-items-center justify-content-center">
+                <div class="chart-container" style="height: 250px;">
+                  <canvas id="userChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tables -->
+        <h3 class="h4 mb-3">Top Referrers</h3>
+        <div class="table-responsive small shadow-sm rounded">
+          <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">Partner</th>
+                <th scope="col">Email</th>
+                <th scope="col" class="text-end">Referrals</th>
+                <th scope="col" class="text-end">Earnings</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% topReferrers.forEach(r=> { %>
+                <tr>
+                  <td class="fw-medium">
+                    <%= r.name %>
+                  </td>
+                  <td class="text-secondary">
+                    <%= r.email %>
+                  </td>
+                  <td class="text-end">
+                    <%= r.referralCount %>
+                  </td>
+                  <td class="text-end fw-bold text-success">₹<%= r.referralEarnings %>
+                  </td>
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Chart Config
+    Chart.defaults.color = '#adb5bd';
+    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+    // User Chart
+    const ctxUser = document.getElementById('userChart').getContext('2d');
+    new Chart(ctxUser, {
+      type: 'doughnut',
+      data: {
+        labels: ['Premium', 'Free'],
+        datasets: [{
+          data: [<%= premiumUsers %>, <%= freeUsers %>],
+          backgroundColor: ['#0d6efd', '#495057'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+
+    // Revenue Chart
+    const ctxRev = document.getElementById('revenueChart').getContext('2d');
+    const gradient = ctxRev.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(13, 110, 253, 0.2)');
+    gradient.addColorStop(1, 'rgba(13, 110, 253, 0)');
+
+    new Chart(ctxRev, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Revenue (₹)',
+          data: [12000, 19000, 15000, 22000, 28000, 35000],
+          borderColor: '#0d6efd',
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#0d6efd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  </script>
+
+</body>
+
+</html>

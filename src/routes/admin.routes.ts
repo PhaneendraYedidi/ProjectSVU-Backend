@@ -4,7 +4,7 @@ import auth, { AuthRequest } from "../middleware/auth.middleware";
 import { parseExcelBuffer } from "../utils/excelParser";
 import Question from "../models/Question";
 import User from "../models/User";
-import {adminAuth}  from "../middleware/adminAuth.middleware";
+import { adminAuth } from "../middleware/adminAuth.middleware";
 const router = express.Router();
 import Admin from "../models/Admin";
 import bcrypt from "bcrypt";
@@ -147,9 +147,9 @@ router.post("/questions/:id/edit", adminAuth, async (req, res) => {
 
     // 1️⃣ Convert options object → array
     const formattedOptions = Object.entries(options).map(
-      ([key, value]) => ({
+      ([key, text]) => ({
         key,
-        value
+        text
       })
     );
 

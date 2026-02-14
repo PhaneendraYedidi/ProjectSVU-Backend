@@ -1,95 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-bs-theme="dark">
+
 <head>
-  <title>Admin – Questions</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 6px;
-    }
-    h2 {
-      margin-bottom: 10px;
-    }
-    .upload-box {
-      padding: 15px;
-      background: #eef3f9;
-      border: 1px dashed #aaa;
-      margin-bottom: 25px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
-      background: #f0f0f0;
-    }
-    a {
-      text-decoration: none;
-      color: #007bff;
-    }
-    .logout {
-      margin-top: 20px;
-      display: inline-block;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questions | ProjectSVU Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 </head>
 
 <body>
-<div class="container">
 
-  <a class="logout" href="/admin/dashboard">Dashboard</a>
-  <a class="logout" href="/admin/referrals">Referrals</a>
-  <a class="logout" href="/admin/upload">Upload</a>
-  <a class="logout" href="/admin/logout">Logout</a>
+  <div class="container-fluid">
+    <div class="row">
 
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse p-3">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+          <ion-icon name="planet" class="fs-4 me-2"></ion-icon>
+          <span class="fs-5 fw-bold">ProjectSVU</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="/admin/dashboard" class="nav-link link-body-emphasis">
+              <ion-icon name="grid-outline"></ion-icon> Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="/admin/questions" class="nav-link active">
+              <ion-icon name="list-outline"></ion-icon> Questions
+            </a>
+          </li>
+          <li>
+            <a href="/admin/upload" class="nav-link link-body-emphasis">
+              <ion-icon name="cloud-upload-outline"></ion-icon> Upload
+            </a>
+          </li>
+          <li>
+            <a href="/admin/referrals" class="nav-link link-body-emphasis">
+              <ion-icon name="people-outline"></ion-icon> Referrals
+            </a>
+          </li>
+        </ul>
+        <hr>
+        <div class="dropdown">
+          <a href="/admin/logout" class="d-flex align-items-center link-body-emphasis text-decoration-none text-danger">
+            <ion-icon name="log-out-outline" class="me-2"></ion-icon> <strong>Sign Out</strong>
+          </a>
+        </div>
+      </nav>
 
-  <!-- Questions List -->
-  <h2>Questions</h2>
+      <!-- Main Content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+        <div
+          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Questions Database</h1>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="/admin/upload" class="btn btn-primary d-flex align-items-center">
+              <ion-icon name="add-circle-outline" class="me-2"></ion-icon> Upload New
+            </a>
+          </div>
+        </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Question</th>
-        <th>Subject</th>
-        <th>Year</th>
-        <th>Difficulty</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-    <% questions.forEach(q => { %>
-      <tr>
-        <td><%= q.question.substring(0, 80) %>...</td>
-        <td><%= q.subject %></td>
-        <td><%= q.year %></td>
-        <td><%= q.difficulty %></td>
-        <td><%= q.isActive ? "Active" : "Inactive" %></td>
-        <td>
-          <a href="/admin/questions/<%= q._id %>/edit">Edit</a>
-          <form method="post" action="/admin/questions/<%= q._id %>/delete" style="display:inline">
-            <button>Delete</button>
-          </form>
-        </td>
-        
-      </tr>
-    <% }) %>
-    </tbody>
-  </table>
+        <div class="table-responsive shadow-sm rounded">
+          <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col" style="width: 40%;">Question</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Year</th>
+                <th scope="col">Difficulty</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% questions.forEach(q=> { %>
+                <tr>
+                  <td>
+                    <div class="text-truncate" style="max-width: 400px;" title="<%= q.question %>">
+                      <%= q.question %>
+                    </div>
+                  </td>
+                  <td class="text-secondary">
+                    <%= q.subject %>
+                  </td>
+                  <td>
+                    <%= q.year %>
+                  </td>
+                  <td>
+                    <% if (q.difficulty==='Hard' ) { %>
+                      <span class="badge text-bg-danger bg-opacity-75">Hard</span>
+                      <% } else if (q.difficulty==='Medium' ) { %>
+                        <span class="badge text-bg-warning bg-opacity-75">Medium</span>
+                        <% } else { %>
+                          <span class="badge text-bg-success bg-opacity-75">Easy</span>
+                          <% } %>
+                  </td>
+                  <td>
+                    <% if (q.isActive) { %>
+                      <span class="badge rounded-pill text-bg-success">Active</span>
+                      <% } else { %>
+                        <span class="badge rounded-pill text-bg-secondary">Inactive</span>
+                        <% } %>
+                  </td>
+                  <td class="text-end">
+                    <div class="d-inline-flex gap-2">
+                      <a href="/admin/questions/<%= q._id %>/edit"
+                        class="btn btn-sm btn-outline-secondary d-flex align-items-center">
+                        Edit
+                      </a>
+                      <form method="post" action="/admin/questions/<%= q._id %>/delete" style="display:inline"
+                        onsubmit="return confirm('Delete this question?');">
+                        <button class="btn btn-sm btn-outline-danger d-flex align-items-center">
+                          Delete
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </main>
 
+    </div>
+  </div>
 
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
