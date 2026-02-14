@@ -9,6 +9,7 @@ const router = express.Router();
 import Admin from "../models/Admin";
 import bcrypt from "bcrypt";
 import { adminDashboard, adminReferralDashboard } from "../controllers/adminDashboard.controller";
+import { uploadQuestions } from "../controllers/question.controller";
 
 /* SIGNUP PAGE */
 router.get("/signup", (req, res) => {
@@ -83,25 +84,7 @@ router.post(
   "/upload-questions",
   adminAuth,
   upload.single("file"),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "Excel file missing" });
-      }
-
-      const questions = parseExcelBuffer(req.file.buffer);
-
-      await Question.insertMany(questions, { ordered: false });
-
-      // res.json({
-      //   message: "Upload successful",
-      //   count: questions.length
-      // });
-      res.redirect("/admin/questions");
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  uploadQuestions
 );
 
 router.get("/questions", adminAuth, async (req, res) => {

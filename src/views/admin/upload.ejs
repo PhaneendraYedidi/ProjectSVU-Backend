@@ -56,7 +56,7 @@
       <!-- Main Content -->
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
         <h1 class="h2 mb-2">Bulk Import</h1>
-        <p class="text-secondary mb-4">Upload Excel files to add multiple questions at once.</p>
+        <p class="text-secondary mb-4">Upload Excel or JSON files to add multiple questions at once.</p>
 
         <div class="row">
           <div class="col-md-6">
@@ -65,11 +65,11 @@
                 <form method="POST" action="/admin/upload-questions" enctype="multipart/form-data">
                   <ion-icon name="document-attach-outline" class="text-secondary mb-3"
                     style="font-size: 4rem;"></ion-icon>
-                  <h4 class="mb-2">Select Excel File</h4>
-                  <p class="text-secondary small mb-4">Supported formats: .xlsx</p>
+                  <h4 class="mb-2">Select File</h4>
+                  <p class="text-secondary small mb-4">Supported formats: .xlsx, .json</p>
 
                   <div class="mb-4">
-                    <input class="form-control form-control-lg" type="file" name="file" accept=".xlsx" required>
+                    <input class="form-control form-control-lg" type="file" name="file" accept=".xlsx, .json" required>
                   </div>
 
                   <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
