@@ -10,6 +10,14 @@ import Admin from "../models/Admin";
 import bcrypt from "bcrypt";
 import { adminDashboard, adminReferralDashboard } from "../controllers/adminDashboard.controller";
 import { uploadQuestions } from "../controllers/question.controller";
+import {
+  createMockTest,
+  deleteMockTest,
+  getCreateMockTestPage,
+  listMockTestsAdmin,
+  getEditMockTestPage,
+  editMockTest
+} from "../controllers/mockTest.controller";
 
 /* SIGNUP PAGE */
 router.get("/signup", (req, res) => {
@@ -179,5 +187,12 @@ router.post(
 router.get("/dashboard", adminAuth, adminDashboard);
 router.get("/referrals", adminAuth, adminReferralDashboard);
 
+/* MOCK TESTS */
+router.get("/mock-tests", adminAuth, listMockTestsAdmin);
+router.get("/create-mock-test", adminAuth, getCreateMockTestPage);
+router.post("/create-mock-test", adminAuth, createMockTest);
+router.get("/mock-tests/:id/edit", adminAuth, getEditMockTestPage);
+router.post("/mock-tests/:id/edit", adminAuth, editMockTest);
+router.post("/mock-tests/:id/delete", adminAuth, deleteMockTest);
 
 export default router;

@@ -7,8 +7,16 @@ import QuestionAttempt from "../models/QuestionAttempt";
 import { MockTest } from "../models/MockTest";
 import auth from "../middleware/auth.middleware";
 import { enforceSubscription } from "../middleware/subscription.middleware";
+import {
+  listActiveMockTests,
+  startMockTestFromTemplate
+} from "../controllers/mockTest.controller";
 
 const router = Router();
+
+/* MOCK TEST TEMPLATES (Mobile) */
+router.get("/list", auth, listActiveMockTests);
+router.post("/start/:templateId", auth, enforceSubscription({ requirePremium: true }), startMockTestFromTemplate);
 
 router.post("/start", auth, enforceSubscription({ requirePremium: true }), async (req, res) => {
   const user = req.user!;

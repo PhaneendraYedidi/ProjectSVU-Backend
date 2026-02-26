@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Mock Test | ProjectSVU Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse p-3">
+                <a href="/"
+                    class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                    <ion-icon name="planet" class="fs-4 me-2"></ion-icon>
+                    <span class="fs-5 fw-bold">ProjectSVU</span>
+                </a>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <a href="/admin/dashboard" class="nav-link link-body-emphasis">
+                            <ion-icon name="grid-outline"></ion-icon> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/questions" class="nav-link link-body-emphasis">
+                            <ion-icon name="list-outline"></ion-icon> Questions
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/mock-tests" class="nav-link active">
+                            <ion-icon name="school-outline"></ion-icon> Mock Tests
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/upload" class="nav-link link-body-emphasis">
+                            <ion-icon name="cloud-upload-outline"></ion-icon> Upload
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/referrals" class="nav-link link-body-emphasis">
+                            <ion-icon name="people-outline"></ion-icon> Referrals
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <div class="dropdown">
+                    <a href="/admin/logout"
+                        class="d-flex align-items-center link-body-emphasis text-decoration-none text-danger">
+                        <ion-icon name="log-out-outline" class="me-2"></ion-icon> <strong>Sign Out</strong>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Create New Mock Test</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="/admin/mock-tests" class="btn btn-outline-secondary d-flex align-items-center">
+                            <ion-icon name="arrow-back-outline" class="me-2"></ion-icon> Back
+                        </a>
+                    </div>
+                </div>
+
+                <form action="/admin/create-mock-test" method="post">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="duration" class="form-label">Duration (minutes)</label>
+                            <input type="number" class="form-control" id="duration" name="duration" value="60" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">Select Questions</h4>
+                        <!-- Filters for selection -->
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" name="filter_subject" onchange="applyFilter()"
+                                style="width: auto;">
+                                <option value="">All Subjects</option>
+                                <% subjects.forEach(s=> { %>
+                                    <option value="<%= s %>" <%=filter.subject===s ? 'selected' : '' %>><%= s %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Need to handle filter submission separately or use JS. For now basic filter via GET param reload -->
+                    <script>
+                        function applyFilter() {
+                            const subject = document.querySelector('select[name="filter_subject"]').value;
+                            const url = new URL(window.location.href);
+                            if (subject) url.searchParams.set('subject', subject);
+                            else url.searchParams.delete('subject');
+                            window.location.href = url.toString();
+                        }
+                    </script>
+
+                    <div class="table-responsive shadow-sm rounded" style="max-height: 600px; overflow-y: auto;">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead class="table-dark sticky-top">
+                                <tr>
+                                    <th scope="col" style="width: 50px;">Select</th>
+                                    <th scope="col">Question</th>
+                                    <th scope="col">Subject</th>
+                                    <th scope="col">Year</th>
+                                    <th scope="col">Difficulty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% questions.forEach(q=> { %>
+                                    <tr>
+                                        <td class="text-center">
+                                            <input class="form-check-input" type="checkbox" name="questionIds"
+                                                value="<%= q._id %>" id="q_<%= q._id %>">
+                                        </td>
+                                        <td>
+                                            <label class="form-check-label w-100" for="q_<%= q._id %>">
+                                                <div class="text-truncate" style="max-width: 500px;"
+                                                    title="<%= q.question %>">
+                                                    <%= q.question %>
+                                                </div>
+                                            </label>
+                                        </td>
+                                        <td class="text-secondary">
+                                            <%= q.subject %>
+                                        </td>
+                                        <td>
+                                            <%= q.year %>
+                                        </td>
+                                        <td>
+                                            <%= q.difficulty %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg d-flex align-items-center">
+                            <ion-icon name="save-outline" class="me-2"></ion-icon> Create Mock Test
+                        </button>
+                    </div>
+                </form>
+
+            </main>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

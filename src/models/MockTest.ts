@@ -2,6 +2,7 @@ import { Schema, model, Types, Document } from "mongoose";
 
 export interface IMockTest extends Document {
   user: Types.ObjectId;
+  templateId?: Types.ObjectId;
   questions: Types.ObjectId[];
   answers: Record<string, string>; // questionId -> chosen option
   score?: number;
@@ -14,6 +15,7 @@ export interface IMockTest extends Document {
 const mockTestSchema = new Schema<IMockTest>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    templateId: { type: Schema.Types.ObjectId, ref: "MockTestTemplate" },
     questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
     answers: { type: Object, default: {} },
     score: Number,
